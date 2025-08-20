@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import '../models/finger.dart';
 import '../config/app_config.dart';
 import '../utils/app_utils.dart';
+import '../controllers/settings_controller.dart';
 import 'dart:math';
 
 class PeopleController extends ChangeNotifier {
+  final SettingsController settingsController;
   final List<Finger> fingers = [];
   int? selectedIndex;
   bool picking = false;
   String instructionText = "Tap and hold with multiple fingers to add participants!";
   bool showInstructions = true;
+
+  PeopleController({required this.settingsController});
 
   void addFinger(BuildContext context, DragDownDetails details) {
     if (fingers.length >= AppConfig.maxParticipants || picking) return;
