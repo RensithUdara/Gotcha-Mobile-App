@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../controllers/people_controller.dart';
+import '../config/app_config.dart';
 
 class PeopleScreen extends StatefulWidget {
   @override
@@ -16,7 +17,7 @@ class _PeopleScreenState extends State<PeopleScreen>
   void initState() {
     super.initState();
     _backgroundController = AnimationController(
-      duration: Duration(seconds: 20),
+      duration: Duration(milliseconds: AppConfig.backgroundAnimationDuration),
       vsync: this,
     )..repeat();
     
@@ -192,7 +193,7 @@ class _PeopleScreenState extends State<PeopleScreen>
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                '${_controller.fingers.length}/6',
+                                '${_controller.fingers.length}/${AppConfig.maxParticipants}',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -267,7 +268,7 @@ class _PeopleScreenState extends State<PeopleScreen>
                     child: AnimatedBuilder(
                       animation: _controller,
                       builder: (context, _) {
-                        bool canPick = _controller.fingers.length > 1 && !_controller.picking;
+                        bool canPick = _controller.fingers.length >= AppConfig.minParticipants && !_controller.picking;
                         
                         return Column(
                           children: [
@@ -356,7 +357,7 @@ class _PeopleScreenState extends State<PeopleScreen>
     if (_controller.fingers.length == 0) {
       return "No participants yet";
     } else if (_controller.fingers.length == 1) {
-      return "Need at least 2 participants to pick";
+      return "Need at least ${AppConfig.minParticipants} participants to pick";
     } else if (_controller.picking) {
       return "Selecting winner...";
     } else if (_controller.selectedIndex != null && !_controller.picking) {

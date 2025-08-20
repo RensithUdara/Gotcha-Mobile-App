@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/finger.dart';
+import '../config/app_config.dart';
+import '../utils/app_utils.dart';
 import 'dart:math';
-import 'package:vibration/vibration.dart';
-import 'package:flutter/services.dart';
 
 class PeopleController extends ChangeNotifier {
   final List<Finger> fingers = [];
@@ -12,14 +12,14 @@ class PeopleController extends ChangeNotifier {
   bool showInstructions = true;
 
   void addFinger(BuildContext context, DragDownDetails details) {
-    if (fingers.length >= 6 || picking) return;
+    if (fingers.length >= AppConfig.maxParticipants || picking) return;
     
     final RenderBox box = context.findRenderObject() as RenderBox;
     final Offset pos = box.globalToLocal(details.globalPosition);
     
     // Check if finger is not too close to existing fingers
     bool tooClose = fingers.any((finger) => 
-      (finger.position - pos).distance < 60
+      AppUtils.calculateDistance(finger.position, pos) < AppConfig.minFingerDistance
     );
     
     if (!tooClose) {
@@ -36,7 +36,7 @@ class PeopleController extends ChangeNotifier {
       }
       
       // Haptic feedback
-      HapticFeedback.lightImpact();
+      AppUtils.provideHapticFeedback(HapticIntensity.light);
       notifyListeners();
     }
   }
@@ -50,13 +50,13 @@ class PeopleController extends ChangeNotifier {
         instructionText = "Add more fingers to start picking!";
       }
       
-      HapticFeedback.lightImpact();
+      AppUtils.provideHapticFeedback(HapticIntensity.light);
       notifyListeners();
     }
   }
 
   void pickRandom() async {
-    if (fingers.length < 2 || picking) return;
+    if (fingers.length < AppConfig.minParticipants || picking) return;
     
     picking = true;
     showInstructions = false;
@@ -76,13 +76,9 @@ class PeopleController extends ChangeNotifier {
     instructionText = "Winner selected! 🎉";
     notifyListeners();
     
-    // Vibration feedback
-    if (await Vibration.hasVibrator() ?? false) {
-      Vibration.vibrate(duration: 500);
-    }
-    
-    // Strong haptic feedback
-    HapticFeedback.heavyImpact();
+    // Vibration and haptic feedback
+    await AppUtils.provideVibration(duration: AppConfig.defaultVibrationDuration);
+    AppUtils.provideHapticFeedback(HapticIntensity.heavy);
     
     // Show winner for 2 seconds
     await Future.delayed(Duration(seconds: 2));
@@ -106,7 +102,7 @@ class PeopleController extends ChangeNotifier {
     picking = false;
     showInstructions = true;
     instructionText = "Tap and hold with multiple fingers to add participants!";
-    HapticFeedback.mediumImpact();
+    AppUtils.provideHapticFeedback(HapticIntensity.medium);
     notifyListeners();
   }
 
@@ -114,18 +110,18 @@ class PeopleController extends ChangeNotifier {
     return [
       for (int i = 0; i < fingers.length; i++)
         AnimatedPositioned(
-          duration: Duration(milliseconds: 400),
+          duration: Duration(milliseconds: AppConfig.selectionAnimationDuration),
           curve: Curves.elasticOut,
-          left: fingers[i].position.dx - 45,
-          top: fingers[i].position.dy - 45,
+          left: fingers[i].position.dx - (AppConfig.fingerSize / 2),
+          top: fingers[i].position.dy - (AppConfig.fingerSize / 2),
           child: AnimatedOpacity(
             duration: Duration(milliseconds: 300),
             opacity: selectedIndex == null || selectedIndex == i ? 1 : 0.3,
             child: AnimatedContainer(
-              duration: Duration(milliseconds: 400),
+              duration: Duration(milliseconds: AppConfig.selectionAnimationDuration),
               curve: Curves.elasticOut,
-              width: selectedIndex == i ? 100 : 90,
-              height: selectedIndex == i ? 100 : 90,
+              width: selectedIndex == i ? AppConfig.winnerFingerSize : AppConfig.fingerSize,
+              height: selectedIndex == i ? AppConfig.winnerFingerSize : AppConfig.fingerSize,
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   colors: [
