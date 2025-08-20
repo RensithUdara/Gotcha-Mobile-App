@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/finger.dart';
+import '../config/app_config.dart';
+import '../utils/app_utils.dart';
 import 'dart:math';
-import 'package:vibration/vibration.dart';
-import 'package:flutter/services.dart';
 
 class PeopleController extends ChangeNotifier {
   final List<Finger> fingers = [];
@@ -12,14 +12,14 @@ class PeopleController extends ChangeNotifier {
   bool showInstructions = true;
 
   void addFinger(BuildContext context, DragDownDetails details) {
-    if (fingers.length >= 6 || picking) return;
+    if (fingers.length >= AppConfig.maxParticipants || picking) return;
     
     final RenderBox box = context.findRenderObject() as RenderBox;
     final Offset pos = box.globalToLocal(details.globalPosition);
     
     // Check if finger is not too close to existing fingers
     bool tooClose = fingers.any((finger) => 
-      (finger.position - pos).distance < 60
+      AppUtils.calculateDistance(finger.position, pos) < AppConfig.minFingerDistance
     );
     
     if (!tooClose) {
@@ -36,7 +36,7 @@ class PeopleController extends ChangeNotifier {
       }
       
       // Haptic feedback
-      HapticFeedback.lightImpact();
+      AppUtils.provideHapticFeedback(HapticIntensity.light);
       notifyListeners();
     }
   }
@@ -50,7 +50,7 @@ class PeopleController extends ChangeNotifier {
         instructionText = "Add more fingers to start picking!";
       }
       
-      HapticFeedback.lightImpact();
+      AppUtils.provideHapticFeedback(HapticIntensity.light);
       notifyListeners();
     }
   }
