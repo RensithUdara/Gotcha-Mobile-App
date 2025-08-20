@@ -54,7 +54,7 @@ class PeopleController extends ChangeNotifier {
         instructionText = "Add more fingers to start picking!";
       }
       
-      AppUtils.provideHapticFeedback(HapticIntensity.light);
+      settingsController.provideHapticFeedback(HapticIntensity.light);
       notifyListeners();
     }
   }
