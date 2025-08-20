@@ -3,6 +3,7 @@ import '../controllers/people_controller.dart';
 import '../controllers/settings_controller.dart';
 import '../config/app_config.dart';
 import '../views/settings_screen.dart';
+import '../utils/app_utils.dart';
 
 class PeopleScreen extends StatefulWidget {
   final SettingsController settingsController;
@@ -48,24 +49,24 @@ class _PeopleScreenState extends State<PeopleScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF667eea),
-              Color(0xFF764ba2),
-              Color(0xFFf093fb),
-            ],
-            stops: [0.0, 0.5, 1.0],
-          ),
-        ),
+    return AnimatedBuilder(
+      animation: widget.settingsController,
+      builder: (context, _) {
+        return Scaffold(
+          body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: widget.settingsController.gradientColors,
+                stops: [0.0, 0.5, 1.0],
+              ),
+            ),
         child: Stack(
           children: [
             // Animated background pattern
-            AnimatedBuilder(
+            if (widget.settingsController.settings.enableBackgroundAnimation)
+              AnimatedBuilder(
               animation: _backgroundAnimation,
               builder: (context, child) {
                 return CustomPaint(
@@ -80,47 +81,71 @@ class _PeopleScreenState extends State<PeopleScreen>
               child: Column(
                 children: [
                   // Custom App Bar
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Gotcha',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Gotcha',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  'Random Picker',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.8),
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              'Random Picker',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
-                                fontSize: 16,
-                              ),
+                            Row(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(Icons.settings, color: Colors.white, size: 28),
+                                    onPressed: () {
+                                      widget.settingsController.provideHapticFeedback(HapticIntensity.light);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => SettingsScreen(
+                                            settingsController: widget.settingsController,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(Icons.refresh, color: Colors.white, size: 28),
+                                    onPressed: _controller.reset,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: IconButton(
-                            icon: Icon(Icons.refresh, color: Colors.white, size: 28),
-                            onPressed: _controller.reset,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  
-                  // Instructions card
-                  AnimatedBuilder(
+                      ),                  // Instructions card
+                  if (widget.settingsController.settings.showInstructions)
+                    AnimatedBuilder(
                     animation: _controller,
                     builder: (context, _) {
                       return AnimatedContainer(
@@ -203,7 +228,7 @@ class _PeopleScreenState extends State<PeopleScreen>
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                '${_controller.fingers.length}/${AppConfig.maxParticipants}',
+                                '${_controller.fingers.length}/${widget.settingsController.settings.maxParticipants}',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -352,6 +377,8 @@ class _PeopleScreenState extends State<PeopleScreen>
           ],
         ),
       ),
+    );
+      },
     );
   }
 
