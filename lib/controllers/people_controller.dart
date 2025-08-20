@@ -81,8 +81,8 @@ class PeopleController extends ChangeNotifier {
     notifyListeners();
     
     // Vibration and haptic feedback
-    await AppUtils.provideVibration(duration: AppConfig.defaultVibrationDuration);
-    AppUtils.provideHapticFeedback(HapticIntensity.heavy);
+    settingsController.provideVibration();
+    settingsController.provideHapticFeedback(HapticIntensity.heavy);
     
     // Show winner for 2 seconds
     await Future.delayed(Duration(seconds: 2));
@@ -106,7 +106,7 @@ class PeopleController extends ChangeNotifier {
     picking = false;
     showInstructions = true;
     instructionText = "Tap and hold with multiple fingers to add participants!";
-    AppUtils.provideHapticFeedback(HapticIntensity.medium);
+    settingsController.provideHapticFeedback(HapticIntensity.medium);
     notifyListeners();
   }
 
@@ -114,18 +114,18 @@ class PeopleController extends ChangeNotifier {
     return [
       for (int i = 0; i < fingers.length; i++)
         AnimatedPositioned(
-          duration: Duration(milliseconds: AppConfig.selectionAnimationDuration),
+          duration: Duration(milliseconds: settingsController.animationDuration),
           curve: Curves.elasticOut,
-          left: fingers[i].position.dx - (AppConfig.fingerSize / 2),
-          top: fingers[i].position.dy - (AppConfig.fingerSize / 2),
+          left: fingers[i].position.dx - (settingsController.settings.fingerSize / 2),
+          top: fingers[i].position.dy - (settingsController.settings.fingerSize / 2),
           child: AnimatedOpacity(
             duration: Duration(milliseconds: 300),
             opacity: selectedIndex == null || selectedIndex == i ? 1 : 0.3,
             child: AnimatedContainer(
-              duration: Duration(milliseconds: AppConfig.selectionAnimationDuration),
+              duration: Duration(milliseconds: settingsController.animationDuration),
               curve: Curves.elasticOut,
-              width: selectedIndex == i ? AppConfig.winnerFingerSize : AppConfig.fingerSize,
-              height: selectedIndex == i ? AppConfig.winnerFingerSize : AppConfig.fingerSize,
+              width: selectedIndex == i ? settingsController.settings.fingerSize + 10 : settingsController.settings.fingerSize,
+              height: selectedIndex == i ? settingsController.settings.fingerSize + 10 : settingsController.settings.fingerSize,
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   colors: [
@@ -149,7 +149,7 @@ class PeopleController extends ChangeNotifier {
                 alignment: Alignment.center,
                 children: [
                   // Participant number
-                  if (selectedIndex != i || !picking)
+                  if (settingsController.settings.showParticipantNumbers && (selectedIndex != i || !picking))
                     Text(
                       '${fingers[i].id}',
                       style: TextStyle(
