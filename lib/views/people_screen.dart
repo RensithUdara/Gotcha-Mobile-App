@@ -268,7 +268,7 @@ class _PeopleScreenState extends State<PeopleScreen>
                     child: AnimatedBuilder(
                       animation: _controller,
                       builder: (context, _) {
-                        bool canPick = _controller.fingers.length > 1 && !_controller.picking;
+                        bool canPick = _controller.fingers.length >= AppConfig.minParticipants && !_controller.picking;
                         
                         return Column(
                           children: [
