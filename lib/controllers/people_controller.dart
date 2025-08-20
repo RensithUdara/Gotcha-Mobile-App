@@ -102,7 +102,7 @@ class PeopleController extends ChangeNotifier {
     picking = false;
     showInstructions = true;
     instructionText = "Tap and hold with multiple fingers to add participants!";
-    HapticFeedback.mediumImpact();
+    AppUtils.provideHapticFeedback(HapticIntensity.medium);
     notifyListeners();
   }
 
@@ -118,10 +118,10 @@ class PeopleController extends ChangeNotifier {
             duration: Duration(milliseconds: 300),
             opacity: selectedIndex == null || selectedIndex == i ? 1 : 0.3,
             child: AnimatedContainer(
-              duration: Duration(milliseconds: 400),
+              duration: Duration(milliseconds: AppConfig.selectionAnimationDuration),
               curve: Curves.elasticOut,
-              width: selectedIndex == i ? 100 : 90,
-              height: selectedIndex == i ? 100 : 90,
+              width: selectedIndex == i ? AppConfig.winnerFingerSize : AppConfig.fingerSize,
+              height: selectedIndex == i ? AppConfig.winnerFingerSize : AppConfig.fingerSize,
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   colors: [
