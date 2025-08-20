@@ -16,7 +16,7 @@ class PeopleController extends ChangeNotifier {
   PeopleController({required this.settingsController});
 
   void addFinger(BuildContext context, DragDownDetails details) {
-    if (fingers.length >= AppConfig.maxParticipants || picking) return;
+    if (fingers.length >= settingsController.settings.maxParticipants || picking) return;
     
     final RenderBox box = context.findRenderObject() as RenderBox;
     final Offset pos = box.globalToLocal(details.globalPosition);
@@ -29,7 +29,7 @@ class PeopleController extends ChangeNotifier {
     if (!tooClose) {
       fingers.add(Finger(
         position: pos, 
-        color: Finger.colors[fingers.length % Finger.colors.length],
+        color: settingsController.fingerColors[fingers.length % settingsController.fingerColors.length],
         id: fingers.length + 1
       ));
       
@@ -40,7 +40,7 @@ class PeopleController extends ChangeNotifier {
       }
       
       // Haptic feedback
-      AppUtils.provideHapticFeedback(HapticIntensity.light);
+      settingsController.provideHapticFeedback(HapticIntensity.light);
       notifyListeners();
     }
   }
