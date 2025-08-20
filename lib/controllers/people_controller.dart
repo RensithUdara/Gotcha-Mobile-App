@@ -110,10 +110,10 @@ class PeopleController extends ChangeNotifier {
     return [
       for (int i = 0; i < fingers.length; i++)
         AnimatedPositioned(
-          duration: Duration(milliseconds: 400),
+          duration: Duration(milliseconds: AppConfig.selectionAnimationDuration),
           curve: Curves.elasticOut,
-          left: fingers[i].position.dx - 45,
-          top: fingers[i].position.dy - 45,
+          left: fingers[i].position.dx - (AppConfig.fingerSize / 2),
+          top: fingers[i].position.dy - (AppConfig.fingerSize / 2),
           child: AnimatedOpacity(
             duration: Duration(milliseconds: 300),
             opacity: selectedIndex == null || selectedIndex == i ? 1 : 0.3,
