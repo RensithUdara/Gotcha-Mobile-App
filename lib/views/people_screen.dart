@@ -1,23 +1,33 @@
 import 'package:flutter/material.dart';
 import '../controllers/people_controller.dart';
+import '../controllers/settings_controller.dart';
 import '../config/app_config.dart';
+import '../views/settings_screen.dart';
 
 class PeopleScreen extends StatefulWidget {
+  final SettingsController settingsController;
+  
+  const PeopleScreen({
+    Key? key,
+    required this.settingsController,
+  }) : super(key: key);
+
   @override
   _PeopleScreenState createState() => _PeopleScreenState();
 }
 
 class _PeopleScreenState extends State<PeopleScreen>
     with TickerProviderStateMixin {
-  final PeopleController _controller = PeopleController();
+  late PeopleController _controller;
   late AnimationController _backgroundController;
   late Animation<double> _backgroundAnimation;
 
   @override
   void initState() {
     super.initState();
+    _controller = PeopleController(settingsController: widget.settingsController);
     _backgroundController = AnimationController(
-      duration: Duration(milliseconds: AppConfig.backgroundAnimationDuration),
+      duration: Duration(milliseconds: widget.settingsController.backgroundAnimationDuration),
       vsync: this,
     )..repeat();
     
