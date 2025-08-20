@@ -56,7 +56,7 @@ class PeopleController extends ChangeNotifier {
   }
 
   void pickRandom() async {
-    if (fingers.length < 2 || picking) return;
+    if (fingers.length < AppConfig.minParticipants || picking) return;
     
     picking = true;
     showInstructions = false;
@@ -76,13 +76,9 @@ class PeopleController extends ChangeNotifier {
     instructionText = "Winner selected! 🎉";
     notifyListeners();
     
-    // Vibration feedback
-    if (await Vibration.hasVibrator() ?? false) {
-      Vibration.vibrate(duration: 500);
-    }
-    
-    // Strong haptic feedback
-    HapticFeedback.heavyImpact();
+    // Vibration and haptic feedback
+    await AppUtils.provideVibration(duration: AppConfig.defaultVibrationDuration);
+    AppUtils.provideHapticFeedback(HapticIntensity.heavy);
     
     // Show winner for 2 seconds
     await Future.delayed(Duration(seconds: 2));
