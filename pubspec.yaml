@@ -13,10 +13,20 @@ dependencies:
   flutter:
     sdk: flutter
   vibration: ^1.7.4
+  device_info_plus: ^9.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^2.0.0
 
 flutter:
   uses-material-design: true
+
+  # Add custom fonts if desired
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'views/people_screen.dart';
 
 void main() {
@@ -11,11 +12,27 @@ class GotchaApp extends StatelessWidget {
     return MaterialApp(
       title: 'Gotcha Random Picker',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.deepPurple,
         brightness: Brightness.light,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        fontFamily: 'Arial',
+        appBarTheme: AppBarTheme(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          systemOverlayStyle: SystemUiOverlayStyle.dark,
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+          iconTheme: IconThemeData(color: Colors.white),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          elevation: 8,
+          backgroundColor: Colors.deepPurple,
+          foregroundColor: Colors.white,
+        ),
       ),
-      darkTheme: ThemeData.dark(),
       home: PeopleScreen(),
       debugShowCheckedModeBanner: false,
     );
