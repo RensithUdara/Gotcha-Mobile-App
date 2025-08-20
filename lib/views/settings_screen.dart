@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../controllers/settings_controller.dart';
 import '../models/app_settings.dart';
-import '../widgets/custom_widgets.dart';
+import '../utils/app_utils.dart';
 
 class SettingsScreen extends StatefulWidget {
   final SettingsController settingsController;

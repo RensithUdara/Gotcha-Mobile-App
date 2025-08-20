@@ -2,17 +2,21 @@ import 'package:flutter/material.dart';
 import '../models/finger.dart';
 import '../config/app_config.dart';
 import '../utils/app_utils.dart';
+import '../controllers/settings_controller.dart';
 import 'dart:math';
 
 class PeopleController extends ChangeNotifier {
+  final SettingsController settingsController;
   final List<Finger> fingers = [];
   int? selectedIndex;
   bool picking = false;
   String instructionText = "Tap and hold with multiple fingers to add participants!";
   bool showInstructions = true;
 
+  PeopleController({required this.settingsController});
+
   void addFinger(BuildContext context, DragDownDetails details) {
-    if (fingers.length >= AppConfig.maxParticipants || picking) return;
+    if (fingers.length >= settingsController.settings.maxParticipants || picking) return;
     
     final RenderBox box = context.findRenderObject() as RenderBox;
     final Offset pos = box.globalToLocal(details.globalPosition);
@@ -25,7 +29,7 @@ class PeopleController extends ChangeNotifier {
     if (!tooClose) {
       fingers.add(Finger(
         position: pos, 
-        color: Finger.colors[fingers.length % Finger.colors.length],
+        color: settingsController.fingerColors[fingers.length % settingsController.fingerColors.length],
         id: fingers.length + 1
       ));
       
@@ -36,7 +40,7 @@ class PeopleController extends ChangeNotifier {
       }
       
       // Haptic feedback
-      AppUtils.provideHapticFeedback(HapticIntensity.light);
+      settingsController.provideHapticFeedback(HapticIntensity.light);
       notifyListeners();
     }
   }
@@ -50,7 +54,7 @@ class PeopleController extends ChangeNotifier {
         instructionText = "Add more fingers to start picking!";
       }
       
-      AppUtils.provideHapticFeedback(HapticIntensity.light);
+      settingsController.provideHapticFeedback(HapticIntensity.light);
       notifyListeners();
     }
   }
